@@ -34,6 +34,19 @@ module ActiveRecord
         return count
       end
 
+      def insert_record(record, force = true, validate = true)
+        if record.new_record?
+          if force
+            record.save!
+          else
+            return false unless record.save(:validate => validate)
+          end
+        end
+
+        through_association = @owner.send(@reflection.through_reflection.name)
+        through_association.create!(construct_join_attributes(record))
+      end
+
       protected
         def create_record(attrs, force = true)
           ensure_owner_is_not_new
@@ -56,19 +69,6 @@ module ActiveRecord
         def construct_find_options!(options)
           options[:joins]   = construct_joins(options[:joins])
           options[:include] = @reflection.source_reflection.options[:include] if options[:include].nil? && @reflection.source_reflection.options[:include]
-        end
-
-        def insert_record(record, force = true, validate = true)
-          if record.new_record?
-            if force
-              record.save!
-            else
-              return false unless record.save(:validate => validate)
-            end
-          end
-
-          through_association = @owner.send(@reflection.through_reflection.name)
-          through_association.create!(construct_join_attributes(record))
         end
 
         # TODO - add dependent option support

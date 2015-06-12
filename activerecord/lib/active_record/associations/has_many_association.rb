@@ -18,6 +18,11 @@ module ActiveRecord
           end
         end
 
+        def insert_record(record, force = false, validate = true)
+          set_belongs_to_association_for(record)
+          force ? record.save! : record.save(:validate => validate)
+        end
+
       protected
         # Returns the number of records in this collection.
         #
@@ -59,11 +64,6 @@ module ActiveRecord
 
         def cached_counter_attribute_name
           "#{@reflection.name}_count"
-        end
-
-        def insert_record(record, force = false, validate = true)
-          set_belongs_to_association_for(record)
-          force ? record.save! : record.save(:validate => validate)
         end
 
         # Deletes the records according to the <tt>:dependent</tt> option.
