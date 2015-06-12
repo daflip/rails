@@ -10,7 +10,6 @@ module ActiveRecord
         @finder_sql = nil
         super
       end
-      protected
         def owner_quoted_id
           if @reflection.options[:primary_key]
             quote_value(@owner.send(@reflection.options[:primary_key]))
@@ -19,6 +18,7 @@ module ActiveRecord
           end
         end
 
+      protected
         # Returns the number of records in this collection.
         #
         # If the association has a counter cache it gets that value. Otherwise
